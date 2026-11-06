@@ -18,7 +18,7 @@
 package fr.insideapp.sonarqube.dart.lang;
 
 import org.junit.Test;
-import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
+import org.sonar.scanner.plugin.api.impl.sensor.DefaultSensorDescriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
