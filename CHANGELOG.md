@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.6.0 (fork diagngrow)
+
+#### Breaking
+
+- Requires SonarQube 26.10+ (Sonar Plugin API 14.1.0.5543) and Java 17+.
+- Default quality profile now activates the Dart recommended rule sets
+  (`package:lints` core + recommended, `package:flutter_lints`) instead of every rule.
+
+#### Enhancements
+
+- Migrated to `org.sonarsource.api.plugin:sonar-plugin-api` 14.1, SLF4J logging and the
+  SonarQube 26.x test fixtures; removed internal API usage (`DefaultIssueLocation`) and Guava.
+- Plugin is only downloaded by the scanner for projects containing Dart (`requiredForLanguages`).
+- Rules regenerated from the official Dart linter catalogue (`pkg/linter/tool/machine/rules.json`):
+  28 added, 14 removed (removed from the linter), descriptions rendered from the linter docs.
+- `analysis_options.yaml` only lists real lints (no analyzer diagnostic codes, no removed/deprecated lints).
+- Rule keys are lowercase, matching the issues reported by the analyzer.
+- New rule generator `scripts/update_dart_lint_rules.py` replaces the HTML scraping Groovy script.
+
 ## 0.5.2
 
 #### Breaking

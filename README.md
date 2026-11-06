@@ -28,6 +28,10 @@ A plugin to enable analysis of Dart and Flutter projects into SonarQube.
 
 The plugin is compatible with sonarQube 7.9+.
 
+> **Fork diagngrow** — version 0.6.0+ targets **SonarQube 26.10** (Sonar Plugin API 14.1, Java 17+).
+> It is no longer compatible with SonarQube versions older than 26.x. Rules are generated from the
+> official Dart linter with `scripts/update_dart_lint_rules.py`.
+
 ## Download
 
 Checkout the [Releases](https://github.com/insideapp-fr/sonar-flutter/releases) page.
