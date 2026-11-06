@@ -27,12 +27,20 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class DartAnalyzerRulesDefinition implements RulesDefinition {
     private static final Logger LOGGER = LoggerFactory.getLogger(DartAnalyzerRulesDefinition.class);
     public static final String REPOSITORY_KEY = "dartanalyzer";
     public static final String REPOSITORY_NAME = REPOSITORY_KEY;
     public static final String RULES_FILE = "/dartanalyzer/rules.json";
+
+    // Cles en camelCase jusqu'a la 0.5.2 : declarees depreciees pour que SonarQube
+    // renomme les regles (profils et issues conserves) au lieu de les supprimer.
+    static final Map<String, String> LEGACY_RULE_KEYS = Map.of(
+            "no_runtimetype_tostring", "no_runtimeType_toString",
+            "prefer_for_elements_to_map_fromiterable", "prefer_for_elements_to_map_fromIterable",
+            "prefer_iterable_wheretype", "prefer_iterable_whereType");
 
     @Override
     public void define(Context context) {
@@ -53,6 +61,9 @@ public class DartAnalyzerRulesDefinition implements RulesDefinition {
                             .setActivatedByDefault(rule.active)
                             .setHtmlDescription(rule.description);
                     newRule.setDebtRemediationFunction(newRule.debtRemediationFunctions().constantPerIssue(rule.debt));
+                    if (LEGACY_RULE_KEYS.containsKey(rule.key)) {
+                        newRule.addDeprecatedRuleKey(REPOSITORY_KEY, LEGACY_RULE_KEYS.get(rule.key));
+                    }
                 }
 
             }

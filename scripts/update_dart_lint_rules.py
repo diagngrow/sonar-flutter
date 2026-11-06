@@ -59,6 +59,15 @@ SEVERITY_BY_CATEGORY = [  # premiere categorie trouvee gagne
     ("style", "MINOR"),
 ]
 DEFAULT_DEBT = "5min"
+# Seuls lints dont le nom historique n'est pas en minuscules. Le catalogue les
+# liste en minuscules, mais les SDK anterieurs a Dart 3.6 ne reconnaissent que
+# ces noms dans analysis_options.yaml (undefined_lint sinon), et les cles
+# SonarQube des versions <= 0.5.2 les utilisaient.
+CAMEL_CASE_LINTS = {name.lower(): name for name in (
+    "no_runtimeType_toString",
+    "prefer_for_elements_to_map_fromIterable",
+    "prefer_iterable_whereType",
+)}
 
 
 def fetch(url: str) -> str:
@@ -67,7 +76,9 @@ def fetch(url: str) -> str:
 
 
 def rule_set(url: str) -> set:
-    return set(re.findall(r"^\s*-\s+([a-z0-9_]+)\s*$", fetch(url), re.MULTILINE))
+    # Noms en minuscules : les jeux gardent le camelCase historique, pas le catalogue.
+    names = re.findall(r"^\s*-\s+([A-Za-z0-9_]+)\s*$", fetch(url), re.MULTILINE)
+    return {name.lower() for name in names}
 
 
 def severity_for(categories) -> str:
@@ -116,7 +127,7 @@ def main() -> int:
             "description": describe(rule),
             "type": "BUG" if BUG_CATEGORIES & set(cats) else "CODE_SMELL",
             "debt": prev.get("debt") or DEFAULT_DEBT,
-            "active": rule["name"] in recommended and rule["state"] != "deprecated",
+            "active": rule["name"].lower() in recommended and rule["state"] != "deprecated",
         })
 
     # Diagnostics de l'analyseur (erreurs/avertissements, hors linter) : conserves.
@@ -125,7 +136,7 @@ def main() -> int:
 
     RULES_FILE.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
-    enabled = [r["name"] for r in sorted(lints, key=lambda r: r["name"])
+    enabled = [CAMEL_CASE_LINTS.get(r["name"].lower(), r["name"]) for r in sorted(lints, key=lambda r: r["name"])
                if r["state"] in ("stable", "experimental")]
     OPTIONS_FILE.write_text("linter:\n  rules:\n" + "".join(f"    - {k}\n" for k in enabled),
                             encoding="utf-8")

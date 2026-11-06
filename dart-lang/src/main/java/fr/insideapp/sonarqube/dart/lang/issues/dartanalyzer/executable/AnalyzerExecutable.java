@@ -31,9 +31,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -137,8 +139,8 @@ public abstract class AnalyzerExecutable {
         File analysisOptionsFile = sensorContext.fileSystem().resolvePath(ANALYSIS_OPTIONS_FILENAME);
         URL inputUrl = DartAnalyzerSensor.class.getResource(ANALYSIS_OPTIONS_FILE);
         assert inputUrl != null;
-        try (java.io.InputStream in = inputUrl.openStream()) {
-            Files.copy(in, analysisOptionsFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        try (InputStream in = inputUrl.openStream()) {
+            Files.copy(in, analysisOptionsFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
     }
 

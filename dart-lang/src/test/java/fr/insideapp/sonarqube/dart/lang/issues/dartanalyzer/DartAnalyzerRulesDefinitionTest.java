@@ -18,6 +18,7 @@
 package fr.insideapp.sonarqube.dart.lang.issues.dartanalyzer;
 
 import org.junit.Test;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,5 +39,19 @@ public class DartAnalyzerRulesDefinitionTest {
         assertThat(dartAnalyzerRepository.rules()).isNotEmpty();
 
 
+    }
+
+    @Test
+    public void legacyCamelCaseKeysAreDeprecatedKeys() {
+
+        RulesDefinition.Context context = new RulesDefinition.Context();
+        new DartAnalyzerRulesDefinition().define(context);
+
+        RulesDefinition.Rule rule = context.repository("dartanalyzer").rule("prefer_iterable_wheretype");
+        assertThat(rule).isNotNull();
+        assertThat(rule.deprecatedRuleKeys())
+                .containsExactly(RuleKey.of("dartanalyzer", "prefer_iterable_whereType"));
+        assertThat(DartAnalyzerRulesDefinition.LEGACY_RULE_KEYS.keySet())
+                .allSatisfy(key -> assertThat(context.repository("dartanalyzer").rule(key)).isNotNull());
     }
 }
