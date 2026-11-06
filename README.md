@@ -30,7 +30,9 @@ The plugin is compatible with sonarQube 7.9+.
 
 > **Fork diagngrow** — version 0.6.0+ targets **SonarQube 26.10** (Sonar Plugin API 14.1, Java 17+).
 > It is no longer compatible with SonarQube versions older than 26.x. Rules are generated from the
-> official Dart linter with `scripts/update_dart_lint_rules.py`.
+> official Dart linter and analyzer with `scripts/update_dart_lint_rules.py`.
+> Building with tests requires JDK 21 (the SonarQube 26.x test fixtures target Java 21);
+> with JDK 17, build the plugin with `mvn package -Dmaven.test.skip=true`.
 
 ## Download
 

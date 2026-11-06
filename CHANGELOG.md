@@ -6,7 +6,13 @@
 
 - Requires SonarQube 26.10+ (Sonar Plugin API 14.1.0.5543) and Java 17+.
 - Default quality profile now activates the Dart recommended rule sets
-  (`package:lints` core + recommended, `package:flutter_lints`) instead of every rule.
+  (`package:lints` core + recommended, `package:flutter_lints`) instead of every rule,
+  plus `close_sinks`, `cancel_subscriptions`, `unawaited_futures`, `throw_in_finally`,
+  `test_types_in_equals` and `no_self_assignments`, and all analyzer warnings.
+- Rule types and severities are recomputed from explicit tables instead of linter categories
+  and the 0.5.2 values: style lints (`curly_braces_in_flow_control_structures`, `avoid_print`,
+  `empty_statements`...) are code smells, CRITICAL is reserved to near-certain bugs, and compile
+  errors are MAJOR instead of BLOCKER. Ratings of existing projects change.
 
 #### Enhancements
 
@@ -16,7 +22,13 @@
 - Rules regenerated from the official Dart linter catalogue (`pkg/linter/tool/machine/rules.json`):
   28 added, 14 removed (removed from the linter), descriptions rendered from the linter docs.
 - `analysis_options.yaml` only lists real lints (no analyzer diagnostic codes, no removed/deprecated lints).
-- Rule keys are lowercase, matching the issues reported by the analyzer.
+- Rule keys are lowercase, matching the issues reported by the analyzer. The three former
+  camelCase keys are declared as deprecated keys, so existing profiles and issues are kept.
+- Analyzer warnings are now rules (142, from `pkg/analyzer/messages.yaml`): `unused_import`,
+  `dead_code`, `deprecated_member_use`, `must_call_super`... were silently dropped before.
+- `analysis_options.yaml` keeps the historical camelCase lint names (Dart < 3.6 rejects the
+  lowercase ones) and ignores `undefined_lint` / `incompatible_lint` on itself.
+- Compile errors no longer defined by the Dart SDK are dropped by the generator.
 - New rule generator `scripts/update_dart_lint_rules.py` replaces the HTML scraping Groovy script.
 
 ## 0.5.2
