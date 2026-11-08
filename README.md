@@ -1,15 +1,11 @@
-![CI](https://github.com/insideapp-fr/sonar-flutter/workflows/CI/badge.svg)
-
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=insideapp-oss_sonar-flutter&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=insideapp-oss_sonar-flutter)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=insideapp-oss_sonar-flutter&metric=coverage)](https://sonarcloud.io/summary/new_code?id=insideapp-oss_sonar-flutter)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=insideapp-oss_sonar-flutter&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=insideapp-oss_sonar-flutter)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=insideapp-oss_sonar-flutter&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=insideapp-oss_sonar-flutter)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=insideapp-oss_sonar-flutter&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=insideapp-oss_sonar-flutter)
-
+![CI](https://github.com/diagngrow/sonar-flutter/workflows/CI/badge.svg)
 
 # SonarQube plugin for Flutter / Dart
 
-A plugin to enable analysis of Dart and Flutter projects into SonarQube.
+A plugin to enable analysis of Dart and Flutter projects into SonarQube, maintained by
+[Diagngrow](https://github.com/diagngrow).
+
+This project is a fork of the original [sonar-flutter](https://github.com/insideapp-fr/sonar-flutter) plugin.
 
 <p style="text-align: center">
 	<img src="screenshots/main.png" alt="main.png" width="80%"/>
@@ -26,9 +22,7 @@ A plugin to enable analysis of Dart and Flutter projects into SonarQube.
 | Complexity | YES                                                             |
 | Syntax     | YES                                                             |
 
-The plugin is compatible with sonarQube 7.9+.
-
-> **Fork diagngrow** — version 0.6.0+ targets **SonarQube 26.10** (Sonar Plugin API 14.1, Java 17+).
+> Version 0.6.0+ targets **SonarQube 26.10** (Sonar Plugin API 14.1, Java 17+).
 > It is no longer compatible with SonarQube versions older than 26.x. Rules are generated from the
 > official Dart linter and analyzer with `scripts/update_dart_lint_rules.py`.
 > Building with tests requires JDK 21 (the SonarQube 26.x test fixtures target Java 21);
@@ -36,9 +30,9 @@ The plugin is compatible with sonarQube 7.9+.
 
 ## Download
 
-Checkout the [Releases](https://github.com/insideapp-fr/sonar-flutter/releases) page.
+Checkout the [Releases](https://github.com/diagngrow/sonar-flutter/releases) page.
 
-Changelog is available [here](https://github.com/insideapp-fr/sonar-flutter/blob/develop/CHANGELOG.md).
+Changelog is available [here](https://github.com/diagngrow/sonar-flutter/blob/master/CHANGELOG.md).
 
 ## Prerequisites
 
@@ -205,9 +199,9 @@ All options are configurable in the SonarQube UI, via `sonar-project.properties`
 
 Any help is welcome, and PRs will be greatly appreciated!
 
-Please read [CONTRIBUTING](https://github.com/insideapp-fr/sonar-flutter/blob/develop/CONTRIBUTING.md) for more information.
+Please read [CONTRIBUTING](https://github.com/diagngrow/sonar-flutter/blob/master/CONTRIBUTING.md) for more information.
 
 
 ## License
 
-SonarQube Plugin for Flutter / Dart is released under the GNU LGPL v3 license. See the [LICENSE](https://github.com/insideapp-fr/sonar-flutter/blob/develop/LICENSE) file for more information.
+SonarQube Plugin for Flutter / Dart is released under the GNU LGPL v3 license. See the [LICENSE](https://github.com/diagngrow/sonar-flutter/blob/master/LICENSE) file for more information.

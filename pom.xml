@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <groupId>fr.insideapp.sonarqube</groupId>
+    <groupId>com.diagngrow.sonarqube</groupId>
     <artifactId>sonar-flutter</artifactId>
     <version>0.6.0</version>
 
@@ -19,8 +19,8 @@
 
     <inceptionYear>2020</inceptionYear>
     <organization>
-        <name>inside|app</name>
-        <url>https://github.com/insideapp-fr</url>
+        <name>Diagngrow</name>
+        <url>https://github.com/diagngrow</url>
     </organization>
     <licenses>
         <license>
@@ -36,9 +36,10 @@
 
     <developers>
         <developer>
-            <id>zippy1978</id>
-            <name>Gilles Grousset</name>
-            <organization>inside|app</organization>
+            <id>diagngrow</id>
+            <name>Diagngrow</name>
+            <organization>Diagngrow</organization>
+            <organizationUrl>https://github.com/diagngrow</organizationUrl>
         </developer>
     </developers>
 
@@ -50,9 +51,8 @@
     </scm>
 
     <properties>
-        <license.owner>inside|app</license.owner>
+        <license.owner>Diagngrow</license.owner>
         <license.title>SonarQube Flutter Plugin</license.title>
-        <license.mailto>contact@insideapp.fr</license.mailto>
 
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
         <jdk.min.version>17</jdk.min.version>
@@ -225,7 +225,6 @@
                     </licenseSets>
                     <properties>
                         <owner>${license.owner}</owner>
-                        <email>${license.mailto}</email>
                         <project.name>SonarQube Flutter Plugin</project.name>
                     </properties>
                 </configuration>
