@@ -1,12 +1,24 @@
 # Changelog
 
+## 0.6.1
+
+#### Breaking
+
+- Maintained by Diagngrow: Maven `groupId` and Java packages renamed to `com.diagngrow.sonarqube`
+  (the plugin key `flutter` and the rule repository `dartanalyzer` are unchanged).
+
+#### Enhancements
+
+- README rewritten for the Diagngrow fork: compatibility table, rules and default profile,
+  build instructions, fixed `sonar.dart.analyzer.options.override` example (`false` keeps the
+  project's own `analysis_options.yaml`), documented `sonar.dart.file.suffixes`; outdated
+  screenshot removed.
+
 ## 0.6.0 (fork diagngrow)
 
 #### Breaking
 
 - Requires SonarQube 26.10+ (Sonar Plugin API 14.1.0.5543) and Java 17+.
-- Maintained by Diagngrow: Maven `groupId` and Java packages renamed to `com.diagngrow.sonarqube`
-  (the plugin key `flutter` and the rule repository `dartanalyzer` are unchanged).
 - Default quality profile now activates the Dart recommended rule sets
   (`package:lints` core + recommended, `package:flutter_lints`) instead of every rule,
   plus `close_sinks`, `cancel_subscriptions`, `unawaited_futures`, `throw_in_finally`,
