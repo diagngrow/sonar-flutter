@@ -42,6 +42,11 @@
             <organization>Diag n' Grow</organization>
             <organizationUrl>https://github.com/diagngrow</organizationUrl>
         </developer>
+        <developer>
+            <id>zippy1978</id>
+            <name>Gilles Grousset</name>
+            <organization>inside|app</organization>
+        </developer>
     </developers>
 
     <scm>
