@@ -9,6 +9,12 @@
 
 #### Enhancements
 
+- Rule generator: rule sets are read with a YAML parser (and fail when empty), and compile
+  errors whose diagnostic was removed from the Dart SDK are dropped (5 rules removed, 431 left).
+- CI and release workflows: least-privilege token permissions, actions pinned by commit SHA,
+  no Maven cache in the release workflow, CI on pull requests; the snapshot release on `develop`,
+  which reused the release tag, is removed.
+- CONTRIBUTING updated (JDK 21, Python rule generator, release process).
 - README rewritten for the Diag n' Grow fork: compatibility table, rules and default profile,
   build instructions, fixed `sonar.dart.analyzer.options.override` example (`false` keeps the
   project's own `analysis_options.yaml`), documented `sonar.dart.file.suffixes`; outdated
@@ -18,7 +24,7 @@
 
 #### Breaking
 
-- Requires SonarQube 26.10+ (Sonar Plugin API 14.1.0.5543) and Java 17+.
+- Requires SonarQube 26.10+ (Sonar Plugin API 14.1.0.5543); the plugin is compiled for Java 17.
 - Default quality profile now activates the Dart recommended rule sets
   (`package:lints` core + recommended, `package:flutter_lints`) instead of every rule,
   plus `close_sinks`, `cancel_subscriptions`, `unawaited_futures`, `throw_in_finally`,

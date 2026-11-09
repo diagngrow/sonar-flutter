@@ -20,11 +20,14 @@ This project is a fork of the original [sonar-flutter](https://github.com/inside
 
 ## Compatibility
 
-| Plugin version | SonarQube                | Java (server and scanner) |
-|----------------|--------------------------|---------------------------|
-| 0.6.0+         | 26.10+ (Plugin API 14.1) | 17+                       |
+| Plugin version | SonarQube                | Plugin bytecode |
+|----------------|--------------------------|-----------------|
+| 0.6.0+         | 26.10+ (Plugin API 14.1) | Java 17         |
 
-Version 0.6.0+ is not compatible with SonarQube versions older than 26.x.
+Version 0.6.0+ is not compatible with SonarQube versions older than 26.x. The Java versions
+required by the SonarQube server and by the scanner are those of your SonarQube version, see the
+[server requirements](https://docs.sonarsource.com/sonarqube-server/server-installation/server-host-requirements)
+and the [scanner requirements](https://docs.sonarsource.com/sonarqube-server/analyzing-source-code/scanners/scanner-environment/general-requirements).
 
 ## Download
 
@@ -57,7 +60,7 @@ For reliability in a CI/CD environment, install the Dart SDK separately as expla
 [Get the Dart SDK](https://dart.dev/get-dart). Dart 2.12+ is required for the machine readable
 analyzer output.
 
-### sonar-scanner (requires Java 17+)
+### sonar-scanner
 
 Install sonar-scanner as explained in the
 [SonarScanner CLI documentation](https://docs.sonarsource.com/sonarqube-server/latest/analyzing-source-code/scanners/sonarscanner/).
@@ -85,7 +88,7 @@ sonar.sourceEncoding=UTF-8
 
 # Analyzer mode
 # Can be:
-# - DETECT (flutter analyze if pubspec.yaml declares Flutter, dart analyze otherwise) - default
+# - DETECT (flutter analyze if pubspec.yaml lists flutter in its dependencies, dart analyze otherwise) - default
 # - MANUAL (an existing report needs to be provided)
 # - FLUTTER (flutter analyze)
 # - DART (dart analyze)
@@ -97,11 +100,16 @@ sonar.sourceEncoding=UTF-8
 
 # Analyzer report output mode
 # Can be:
-# - DETECT (MACHINE when the Dart SDK on the PATH is 2.12+, LEGACY otherwise and for Flutter) - default
+# - DETECT (MACHINE when the Dart SDK version can be read and is 2.12+, LEGACY otherwise and for Flutter) - default
 # - MACHINE (machine readable output, available for Dart 2.12+)
 # - LEGACY (attempts to parse human readable output from dart/flutter)
 # sonar.dart.analyzer.report.mode=
 ```
+
+> **Known issue:** with `DETECT`, the plugin reads the Dart SDK version from the standard error of
+> `dart --version`, while recent Dart SDKs print it on the standard output. The detection then fails
+> ("Could not determine Dart version") and falls back to `LEGACY`. For Dart projects, set
+> `sonar.dart.analyzer.report.mode=MACHINE`.
 
 *For a complete list of available options, please refer to the
 [SonarQube analysis parameters](https://docs.sonarsource.com/sonarqube-server/latest/analyzing-source-code/analysis-parameters/).*
@@ -197,9 +205,9 @@ All options are configurable in the SonarQube UI, via `sonar-project.properties`
 
 | Name                                   | Options                                                                  | Default              | Description                                                                                                                                                                                                                                                    |
 |----------------------------------------|--------------------------------------------------------------------------|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `sonar.dart.analyzer.mode`             | <code>DETECT&#124;DART&#124;FLUTTER&#124;MANUAL&#124;DARTANALYZER</code> | `DETECT`             | By default the plugin detects the analyzer (`flutter analyze` or `dart analyze`) from the `environment` of `pubspec.yaml`. Set it to `MANUAL` to provide an existing report file. For compatibility with older Dart versions, it can be set to `DARTANALYZER`. |
+| `sonar.dart.analyzer.mode`             | <code>DETECT&#124;DART&#124;FLUTTER&#124;MANUAL&#124;DARTANALYZER</code> | `DETECT`             | By default the plugin uses `flutter analyze` when `pubspec.yaml` lists `flutter` in its `dependencies`, and `dart analyze` otherwise. Set it to `FLUTTER` or `DART` to force the analyzer, to `MANUAL` to provide an existing report file, or to `DARTANALYZER` for older Dart versions.|
 | `sonar.dart.analyzer.options.override` | <code>true&#124;false</code>                                             | `true`               | By default any local `analysis_options.yaml` is replaced for the analysis. Set it to `false` to use the project's own file.                                                                                                                                    |
-| `sonar.dart.analyzer.report.mode`      | <code>DETECT&#124;MACHINE&#124;LEGACY</code>                             | `DETECT`             | `DETECT` uses the machine readable output when the Dart SDK on the `PATH` is 2.12+, and the legacy output for Flutter. It must be set when the analyzer mode is `MANUAL`.                                                                                      |
+| `sonar.dart.analyzer.report.mode`      | <code>DETECT&#124;MACHINE&#124;LEGACY</code>                             | `DETECT`             | `DETECT` uses the machine readable output when the Dart SDK version can be read and is 2.12+, and the legacy output for Flutter. The version detection currently fails with recent Dart SDKs (see the known issue above): set `MACHINE` for Dart projects. It must be set when the analyzer mode is `MANUAL`.                                                                |
 | `sonar.dart.analyzer.report.path`      | A file path                                                              | -                    | Required when the analyzer mode is `MANUAL`.                                                                                                                                                                                                                   |
 | `sonar.dart.file.suffixes`             | Comma separated list of suffixes                                         | `.dart`              | Suffixes of the Dart files to analyze.                                                                                                                                                                                                                         |
 | `sonar.flutter.tests.reportPath`       | Comma separated list of file paths (wildcard not supported)              | `tests.output`       | The path to the test report JSON file.                                                                                                                                                                                                                         |
@@ -207,13 +215,13 @@ All options are configurable in the SonarQube UI, via `sonar-project.properties`
 
 ## Rules
 
-The `dartanalyzer` rule repository contains 436 rules, generated from the official Dart SDK:
+The `dartanalyzer` rule repository contains 431 rules, generated from the official Dart SDK:
 
 - 250 lints from the Dart linter catalogue;
 - 142 analyzer warnings (`unused_import`, `dead_code`, `deprecated_member_use`, `must_call_super`...);
-- 44 compile errors.
+- 39 compile errors.
 
-The built-in `dartanalyzer` quality profile activates 298 rules: the recommended rule sets
+The built-in `dartanalyzer` quality profile activates 293 rules: the recommended rule sets
 (`package:lints` core and recommended, `package:flutter_lints`), all analyzer warnings, and
 `close_sinks`, `cancel_subscriptions`, `unawaited_futures`, `throw_in_finally`,
 `test_types_in_equals` and `no_self_assignments`. Other rules can be activated in a custom profile.

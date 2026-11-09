@@ -3582,15 +3582,6 @@
     "active": true
   },
   {
-    "key": "deprecated_new_in_comment_reference",
-    "name": "Deprecated new in comment reference",
-    "severity": "MAJOR",
-    "description": "The analyzer produces this diagnostic when a comment reference (the name of a declaration enclosed in square brackets in a documentation comment) uses the keyword new to refer to a constructor. This form is deprecated.\n @see https://dart.dev/tools/diagnostic-messages#deprecated_new_in_comment_reference",
-    "type": "BUG",
-    "debt": "5min",
-    "active": true
-  },
-  {
     "key": "duplicate_constructor",
     "name": "Duplicate constructor",
     "severity": "MAJOR",
@@ -3847,42 +3838,6 @@
     "name": "Undefined enum constructor",
     "severity": "MAJOR",
     "description": "The analyzer produces this diagnostic when the constructor invoked to initialize an enum value doesn't exist.\n @see https://dart.dev/tools/diagnostic-messages#undefined_enum_constructor",
-    "type": "BUG",
-    "debt": "5min",
-    "active": true
-  },
-  {
-    "key": "undefined_extension_getter",
-    "name": "Undefined extension getter",
-    "severity": "MAJOR",
-    "description": "The analyzer produces this diagnostic when an extension override is used to invoke a getter, but the getter isn't defined by the specified extension. The analyzer also produces this diagnostic when a static getter is referenced but isn't defined by the specified extension.\n @see https://dart.dev/tools/diagnostic-messages#undefined_extension_getter",
-    "type": "BUG",
-    "debt": "5min",
-    "active": true
-  },
-  {
-    "key": "undefined_extension_method",
-    "name": "Undefined extension method",
-    "severity": "MAJOR",
-    "description": "The analyzer produces this diagnostic when an extension override is used to invoke a method, but the method isn't defined by the specified extension. The analyzer also produces this diagnostic when a static method is referenced but isn't defined by the specified extension.\n @see https://dart.dev/tools/diagnostic-messages#undefined_extension_method",
-    "type": "BUG",
-    "debt": "5min",
-    "active": true
-  },
-  {
-    "key": "undefined_extension_setter",
-    "name": "Undefined extension setter",
-    "severity": "MAJOR",
-    "description": "The analyzer produces this diagnostic when an extension override is used to invoke a setter, but the setter isn't defined by the specified extension. The analyzer also produces this diagnostic when a static setter is referenced but isn't defined by the specified extension.\n @see https://dart.dev/tools/diagnostic-messages#undefined_extension_setter",
-    "type": "BUG",
-    "debt": "5min",
-    "active": true
-  },
-  {
-    "key": "undefined_super_member",
-    "name": "Undefined super member",
-    "severity": "MAJOR",
-    "description": "The analyzer produces this diagnostic when an inherited member (method, getter, setter, or operator) is referenced using super, but there's no member with that name in the superclass chain.\n @see https://dart.dev/tools/diagnostic-messages#undefined_super_member",
     "type": "BUG",
     "debt": "5min",
     "active": true

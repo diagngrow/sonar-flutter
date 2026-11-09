@@ -197,8 +197,14 @@ def fetch(url: str) -> str:
 
 def rule_set(url: str) -> set:
     # Noms en minuscules : les jeux gardent le camelCase historique, pas le catalogue.
-    names = re.findall(r"^\s*-\s+([A-Za-z0-9_]+)\s*$", fetch(url), re.MULTILINE)
-    return {name.lower() for name in names}
+    data = yaml.safe_load(fetch(url)) or {}
+    rules = (data.get("linter") or {}).get("rules") or []
+    if isinstance(rules, dict):
+        rules = [name for name, enabled in rules.items() if enabled]
+    names = {str(name).lower() for name in rules}
+    if not names:
+        raise SystemExit(f"Aucune regle lue depuis {url} : format inattendu.")
+    return names
 
 
 def snake(name: str) -> str:
@@ -324,7 +330,8 @@ def main() -> int:
 
     # Erreurs de compilation deja presentes : conservees tant que le SDK les
     # definit (une regle disparue du SDK ne peut plus etre signalee).
-    sdk_codes = {snake(e.get("sharedName") or n) for entries in messages.values() for n, e in entries.items()}
+    sdk_codes = {snake(e.get("sharedName") or n) for entries in messages.values() for n, e in entries.items()
+                 if not e.get("removedIn")}
     known = lint_names | set(warnings)
     error_rules = [dict(r, key=k, type="BUG", severity=COMPILE_ERROR_SEVERITY)
                    for k, r in sorted(old_by_key.items()) if k not in known and k in sdk_codes]
