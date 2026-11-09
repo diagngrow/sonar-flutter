@@ -19,7 +19,7 @@
 
     <inceptionYear>2020</inceptionYear>
     <organization>
-        <name>Diagngrow</name>
+        <name>Diag n' Grow</name>
         <url>https://github.com/diagngrow</url>
     </organization>
     <licenses>
@@ -36,9 +36,10 @@
 
     <developers>
         <developer>
-            <id>diagngrow</id>
-            <name>Diagngrow</name>
-            <organization>Diagngrow</organization>
+            <id>geoffreyp</id>
+            <name>Geoffrey Pruvost</name>
+            <url>https://github.com/geoffreyp</url>
+            <organization>Diag n' Grow</organization>
             <organizationUrl>https://github.com/diagngrow</organizationUrl>
         </developer>
     </developers>
@@ -51,7 +52,7 @@
     </scm>
 
     <properties>
-        <license.owner>Diagngrow</license.owner>
+        <license.owner>Diag n' Grow</license.owner>
         <license.title>SonarQube Flutter Plugin</license.title>
 
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
@@ -216,7 +217,7 @@
                 <configuration>
                     <licenseSets>
                         <licenseSet>
-                            <!-- notice d'origine conservee (LGPL) + Diagngrow -->
+                            <!-- notice d'origine conservee (LGPL) + Diag n' Grow -->
                             <header>${maven.multiModuleProjectDirectory}/license-header.txt</header>
                             <includes>
                                 <include>**/*.java</include>

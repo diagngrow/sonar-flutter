@@ -4,12 +4,12 @@
 
 #### Breaking
 
-- Maintained by Diagngrow: Maven `groupId` and Java packages renamed to `com.diagngrow.sonarqube`
+- Maintained by Diag n' Grow: Maven `groupId` and Java packages renamed to `com.diagngrow.sonarqube`
   (the plugin key `flutter` and the rule repository `dartanalyzer` are unchanged).
 
 #### Enhancements
 
-- README rewritten for the Diagngrow fork: compatibility table, rules and default profile,
+- README rewritten for the Diag n' Grow fork: compatibility table, rules and default profile,
   build instructions, fixed `sonar.dart.analyzer.options.override` example (`false` keeps the
   project's own `analysis_options.yaml`), documented `sonar.dart.file.suffixes`; outdated
   screenshot removed.

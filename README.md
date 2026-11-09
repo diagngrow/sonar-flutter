@@ -3,7 +3,7 @@
 # SonarQube plugin for Flutter / Dart
 
 A plugin to enable analysis of Dart and Flutter projects into SonarQube, maintained by
-[Diagngrow](https://github.com/diagngrow).
+[Diag n' Grow](https://github.com/diagngrow).
 
 This project is a fork of the original [sonar-flutter](https://github.com/insideapp-fr/sonar-flutter) plugin.
 
