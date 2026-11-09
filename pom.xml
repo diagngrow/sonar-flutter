@@ -216,7 +216,8 @@
                 <configuration>
                     <licenseSets>
                         <licenseSet>
-                            <header>com/mycila/maven/plugin/license/templates/LGPL-3.txt</header>
+                            <!-- notice d'origine conservee (LGPL) + Diagngrow -->
+                            <header>${maven.multiModuleProjectDirectory}/license-header.txt</header>
                             <includes>
                                 <include>**/*.java</include>
                                 <include>**/*.groovy</include>
