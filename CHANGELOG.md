@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.6.1
+
+#### Breaking
+
+- Maintained by Diag n' Grow: Maven `groupId` and Java packages renamed to `com.diagngrow.sonarqube`
+  (the plugin key `flutter` and the rule repository `dartanalyzer` are unchanged).
+
+#### Enhancements
+
+- Rule generator: rule sets are read with a YAML parser (and fail when empty), and compile
+  errors whose diagnostic was removed from the Dart SDK are dropped (5 rules removed, 431 left).
+  Sources are fetched over HTTPS only, duplicate YAML keys and missing diagnostic classes are
+  rejected, and the default profile is checked against mutually exclusive lints (with tests).
+- CI and release workflows: least-privilege token permissions, actions pinned by commit SHA,
+  no Maven cache in the release workflow, CI on pull requests (push builds limited to `master`),
+  release tags restricted to `0.X.Y`; the snapshot release on `develop`, which reused the release
+  tag, is removed.
+- CONTRIBUTING updated (JDK 21, Python rule generator, release process).
+- README rewritten for the Diag n' Grow fork: compatibility table, rules and default profile,
+  build instructions, fixed `sonar.dart.analyzer.options.override` example (`false` keeps the
+  project's own `analysis_options.yaml`), documented `sonar.dart.file.suffixes`; outdated
+  screenshot removed.
+
+## 0.6.0 (fork diagngrow)
+
+#### Breaking
+
+- Requires SonarQube 26.10+ (Sonar Plugin API 14.1.0.5543); the plugin is compiled for Java 17.
+- Default quality profile now activates the Dart recommended rule sets
+  (`package:lints` core + recommended, `package:flutter_lints`) instead of every rule,
+  plus `close_sinks`, `cancel_subscriptions`, `unawaited_futures`, `throw_in_finally`,
+  `test_types_in_equals` and `no_self_assignments`, and all analyzer warnings.
+- Rule types and severities are recomputed from explicit tables instead of linter categories
+  and the 0.5.2 values: style lints (`curly_braces_in_flow_control_structures`, `avoid_print`,
+  `empty_statements`...) are code smells, CRITICAL is reserved to near-certain bugs, and compile
+  errors are MAJOR instead of BLOCKER. Ratings of existing projects change.
+
+#### Enhancements
+
+- Migrated to `org.sonarsource.api.plugin:sonar-plugin-api` 14.1, SLF4J logging and the
+  SonarQube 26.x test fixtures; removed internal API usage (`DefaultIssueLocation`) and Guava.
+- Plugin is only downloaded by the scanner for projects containing Dart (`requiredForLanguages`).
+- Rules regenerated from the official Dart linter catalogue (`pkg/linter/tool/machine/rules.json`):
+  28 added, 14 removed (removed from the linter), descriptions rendered from the linter docs.
+- `analysis_options.yaml` only lists real lints (no analyzer diagnostic codes, no removed/deprecated lints).
+- Rule keys are lowercase, matching the issues reported by the analyzer. The three former
+  camelCase keys are declared as deprecated keys, so existing profiles and issues are kept.
+- Analyzer warnings are now rules (142, from `pkg/analyzer/messages.yaml`): `unused_import`,
+  `dead_code`, `deprecated_member_use`, `must_call_super`... were silently dropped before.
+- `analysis_options.yaml` keeps the historical camelCase lint names (Dart < 3.6 rejects the
+  lowercase ones) and ignores `undefined_lint` / `incompatible_lint` on itself.
+- Compile errors no longer defined by the Dart SDK are dropped by the generator.
+- New rule generator `scripts/update_dart_lint_rules.py` replaces the HTML scraping Groovy script.
+
 ## 0.5.2
 
 #### Breaking
@@ -16,8 +70,8 @@
 
 #### Bug Fixes
 
-- [#187](https://github.com/insideapp-fr/sonar-flutter/issues/187) pubspec.yaml parser fails when no dependencies are declared
-- [#223](https://github.com/insideapp-fr/sonar-flutter/issues/223) some dartanalyzer rules disappeared
+- #187 pubspec.yaml parser fails when no dependencies are declared
+- #223 some dartanalyzer rules disappeared
 
 ## 0.5.1
 
@@ -35,9 +89,9 @@
 
 #### Bug Fixes
 
-- [#177](https://github.com/insideapp-fr/sonar-flutter/issues/177) analyzer execution fails when errors detected.
-- [#212](https://github.com/insideapp-fr/sonar-flutter/issues/212) source file not indexed with SonarQube 10.4+
-- [PR #201](https://github.com/insideapp-fr/sonar-flutter/pull/201) bump snakeyaml and jackson-databind to latest versions
+- #177 analyzer execution fails when errors detected.
+- #212 source file not indexed with SonarQube 10.4+
+- PR #201 bump snakeyaml and jackson-databind to latest versions
 - Updated Apache Ivy to 2.5.2
 
 ## 0.5.0
@@ -86,7 +140,7 @@
 
 #### Bug Fixes
 
-- [#160](https://github.com/insideapp-fr/sonar-flutter/issues/160) dart analysis with an exception of NumberFormatException
+- #160 dart analysis with an exception of NumberFormatException
 
 
 ## 0.4.0
@@ -165,9 +219,9 @@
 
 #### Enhancements
 
-- Add Flutter 1.20.0 test report compatibility (thanks to [Peter Leibiger](https://github.com/kuhnroyal)), fixes [#19](https://github.com/insideapp-fr/sonar-flutter/issues/19)
-- Improve test report parsing (thanks to [Peter Leibiger](https://github.com/kuhnroyal)), fixes [#13](https://github.com/insideapp-fr/sonar-flutter/issues/13)
-- Ability to use existing analysis options (configurable behavior) (thanks to [Stephane Janicaud](https://github.com/stephanecodes])), fixes [#23](https://github.com/insideapp-fr/sonar-flutter/issues/23), [#18](https://github.com/insideapp-fr/sonar-flutter/issues/18)
+- Add Flutter 1.20.0 test report compatibility (thanks to [Peter Leibiger](https://github.com/kuhnroyal)), fixes #19
+- Improve test report parsing (thanks to [Peter Leibiger](https://github.com/kuhnroyal)), fixes #13
+- Ability to use existing analysis options (configurable behavior) (thanks to [Stephane Janicaud](https://github.com/stephanecodes])), fixes #23, #18
 - Paginated analysis with dartanalyzer (thanks to [victorgilc](https://github.com/victorgilc))
 
 #### Bug Fixes
@@ -176,8 +230,8 @@
 - Better test report parsing (thanks to [victorgilc](https://github.com/victorgilc))
 - Restore Java 8 compatibility required by the sonar-scanner (thanks to [Peter Leibiger](https://github.com/kuhnroyal))
 - Restore the original analysis options file when analysis crashes (thanks to [amond](https://github.com/amondnet))
-- Windows support (thanks to [victorgilc](https://github.com/victorgilc)), fixes [#12](https://github.com/insideapp-fr/sonar-flutter/issues/12), [#24](https://github.com/insideapp-fr/sonar-flutter/issues/24)
-- Running sonar-scanner does not result no 0 exit code anymore when issues are found by dartanalyzer (thanks to [amond](https://github.com/amondnet)), fixes [#11](https://github.com/insideapp-fr/sonar-flutter/issues/11)
+- Windows support (thanks to [victorgilc](https://github.com/victorgilc)), fixes #12, #24
+- Running sonar-scanner does not result no 0 exit code anymore when issues are found by dartanalyzer (thanks to [amond](https://github.com/amondnet)), fixes #11
 
 ## 0.2.1
 

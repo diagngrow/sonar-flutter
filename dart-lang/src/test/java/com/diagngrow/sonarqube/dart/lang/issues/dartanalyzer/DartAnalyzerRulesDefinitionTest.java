@@ -1,0 +1,92 @@
+/*
+ * SonarQube Flutter Plugin - Enables analysis of Dart and Flutter projects into SonarQube.
+ * Copyright © 2020 inside|app (contact@insideapp.fr)
+ * Copyright © 2026 Diag n' Grow (contact@diagngrow.com)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.diagngrow.sonarqube.dart.lang.issues.dartanalyzer;
+
+import org.junit.Test;
+import org.sonar.api.rule.RuleKey;
+import org.sonar.api.rules.RuleType;
+import org.sonar.api.server.rule.RulesDefinition;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class DartAnalyzerRulesDefinitionTest {
+
+    @Test
+    public void define() {
+
+        DartAnalyzerRulesDefinition rulesDefinition = new DartAnalyzerRulesDefinition();
+        RulesDefinition.Context context = new RulesDefinition.Context();
+        rulesDefinition.define(context);
+
+        RulesDefinition.Repository dartAnalyzerRepository = context.repository("dartanalyzer");
+        assertThat(dartAnalyzerRepository).isNotNull();
+        assertThat(dartAnalyzerRepository.name()).isEqualTo("dartanalyzer");
+        assertThat(dartAnalyzerRepository.language()).isEqualTo("dart");
+        assertThat(dartAnalyzerRepository.rules()).isNotEmpty();
+
+
+    }
+
+    @Test
+    public void legacyCamelCaseKeysAreDeprecatedKeys() {
+
+        RulesDefinition.Context context = new RulesDefinition.Context();
+        new DartAnalyzerRulesDefinition().define(context);
+
+        // Valeurs attendues ecrites en dur, independantes de LEGACY_RULE_KEYS.
+        String[][] expected = {
+                {"no_runtimetype_tostring", "no_runtimeType_toString"},
+                {"prefer_for_elements_to_map_fromiterable", "prefer_for_elements_to_map_fromIterable"},
+                {"prefer_iterable_wheretype", "prefer_iterable_whereType"},
+        };
+        for (String[] keys : expected) {
+            RulesDefinition.Rule rule = context.repository("dartanalyzer").rule(keys[0]);
+            assertThat(rule).as(keys[0]).isNotNull();
+            assertThat(rule.deprecatedRuleKeys()).as(keys[0])
+                    .containsExactly(RuleKey.of("dartanalyzer", keys[1]));
+        }
+        assertThat(DartAnalyzerRulesDefinition.LEGACY_RULE_KEYS).hasSize(expected.length);
+    }
+
+    @Test
+    public void analyzerWarningsAreRulesActivatedByDefault() {
+
+        RulesDefinition.Context context = new RulesDefinition.Context();
+        new DartAnalyzerRulesDefinition().define(context);
+        RulesDefinition.Repository repository = context.repository("dartanalyzer");
+
+        for (String key : new String[]{"unused_import", "dead_code", "deprecated_member_use", "must_call_super"}) {
+            assertThat(repository.rule(key)).as(key).isNotNull();
+            assertThat(repository.rule(key).activatedByDefault()).as(key).isTrue();
+        }
+    }
+
+    @Test
+    public void styleLintsAreNotBugs() {
+
+        RulesDefinition.Context context = new RulesDefinition.Context();
+        new DartAnalyzerRulesDefinition().define(context);
+        RulesDefinition.Repository repository = context.repository("dartanalyzer");
+
+        assertThat(repository.rule("curly_braces_in_flow_control_structures").type()).isEqualTo(RuleType.CODE_SMELL);
+        assertThat(repository.rule("empty_statements").type()).isEqualTo(RuleType.CODE_SMELL);
+        assertThat(repository.rule("avoid_print").type()).isEqualTo(RuleType.CODE_SMELL);
+        assertThat(repository.rule("hash_and_equals").type()).isEqualTo(RuleType.BUG);
+    }
+}

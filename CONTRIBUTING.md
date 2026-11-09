@@ -4,21 +4,27 @@ This documentation is a guide for plugin developers / contributors.
 
 ## Requirements
 
-- Java JDK 11+
+- Java JDK 21 (the SonarQube 26.x test fixtures target Java 21; with JDK 17 the plugin can only
+  be built without the tests, see below)
 - Maven 3.8 or later
-- A local SonarQube instance for local testing
+- [uv](https://docs.astral.sh/uv/) to run the rule generator
+- A local SonarQube 26.10+ instance for local testing
 
 ## Main commands
 
-#### Add missing license headers on source files
+#### Check and add license headers on source files
+
+The header template is `license-header.txt`. The CI fails when a Java file does not match it.
 
 ```bash
+$ mvn license:check
 $ mvn license:format
 ```
 
 #### Local plugin deployment
 
-In order to start the plugin, SONARQUBE_HOME environment variable must be set
+In order to deploy the plugin locally, the SONARQUBE_HOME environment variable must be set
+(the `ant.xml` helper restarts SonarQube with the macOS launcher).
 
 If variable is already set, use:
 ```bash
@@ -38,76 +44,51 @@ When started locally SonarQube UI is available at http://localhost:9000
 $ mvn package
 ```
 
-## Updating rules
-
-The plugin rules are based on external linters such as dartanalyzer.
-
-When a new version of the linter (with new rules) is released, the matching repositoryRule repository must be updated as well in order to include the new rules.
-
-This update is mostly automatic with the execution of a Groovy script.
-
-### dartanalyzer update
-
-Use the following command to update the SwiftLint rules file:
+With JDK 17, skip the tests:
 
 ```bash
-$ mvn groovy:execute -Dsource=scripts/updateDartAnalyzerRules.groovy
+$ mvn package -Dmaven.test.skip=true
 ```
 
-### Filling rules information
+## Updating rules
 
-Eventhough updating rule repository file is mostly automatic, some data related to rules cannot be automatically computed.
+The rules of the `dartanalyzer` repository (`dart-lang/src/main/resources/dartanalyzer/rules.json`)
+and the plugin's `analysis_options.yaml` are generated from the Dart SDK sources: the linter
+catalogue, the analyzer diagnostics (`pkg/analyzer/messages.yaml`) and the `lints` /
+`flutter_lints` rule sets.
 
-This is the case for :
-- severity (blocker, critical, major, minor, info)
-- type (code smell, bug, vulnerability)
-- debt (remediation effort estimate, optional)
+When a new Dart SDK is released, regenerate them with:
 
-At the end of a rule update script, rules are scanned, and you are asked to fill missing information:
-
-```console
-Missing information on rule always_use_package_imports
-Avoid relative imports for files in lib/.
-
-Severity? (1 = BLOCKER, 2 = CRITICAL, 3 = MAJOR, 4 = MINOR, 5 = INFO)
-3
-MAJOR
-Type? (1 = CODE_SMELL, 2 = BUG, 3 = VULNERABILITY, 4 = SECURITY_HOTSPOT)
-1
-CODE_SMELL
-Remediation time? (in minutes)
-5
-5min
+```bash
+$ uv run --no-project --with markdown --with pyyaml python scripts/update_dart_lint_rules.py
 ```
-> **Warning**
-> By default, rules manually processed are limited to 20 (defined in the `scripts.max-manual`property of the `pom.xml`) per run.
-> If there are more than 20 rules to fill manually, launch the script again to process next rules.
+
+The script prints the added and removed rules. It fails when a source has an unexpected format
+(duplicate YAML key, missing diagnostic class, empty rule set) or when the default profile would
+activate two mutually exclusive lints.
+
+The generator tests run with:
+
+```bash
+$ uv run --no-project --with markdown --with pyyaml --with pytest python -m pytest scripts/tests
+```
+
+ Rule types and severities are computed from the
+explicit tables at the top of the script (`BUG_LINTS`, `MAJOR_SMELL_LINTS`, `BUG_WARNINGS`...):
+update these tables to change how a rule is classified, then run the script again.
 
 ## Releasing
 
-### Snapshots
-
-Every push to `develop` branch updates the matching snapshot release.
-
-For example: if project version is set to `0.1-SNAPSHOT` on`develop`. A `0.1-SNAPSHOT` will be released (or release will be updated if it already exists) as soon as the `maven.yml` GitHub actions workflow finishes.
-
-### Stable
-
-A new stable release is pushed on GitHub, on every new tag creation (performed by the `release.yml` GitHub Actions workflow).
+A new stable release is published on GitHub on every new `0.X.Y` tag (for example `0.6.1`), by the `release.yml`
+GitHub Actions workflow. The workflow sets the project version from the tag.
 
 The steps to issue a new stable release are:
-1. Merge `develop` branch to `main`branch (do not squash in order to keep commit history).
-2. Create a new tag from `main` branch with a naming matching the release number. Example:
+1. Update the version in the `pom.xml` files and the `CHANGELOG.md`, then merge into `master`.
+2. Create a new tag from `master` with the release number. Example:
 ```bash
-$ git tag -a 0.1.0
+$ git tag -a 0.6.1 -m "0.6.1"
 ```
 3. Push the new tag with:
 ```bash
-$ git push --tags
+$ git push origin 0.6.1
 ```
-
-Once released, remember to update the project version on the `develop`branch to a new snapshot number:
-```bash
-$ mvn versions:set -DnewVersion=0.2-SNAPSHOT
-``` 
-

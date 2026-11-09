@@ -2,15 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <groupId>fr.insideapp.sonarqube</groupId>
+    <groupId>com.diagngrow.sonarqube</groupId>
     <artifactId>sonar-flutter</artifactId>
-    <version>0.5.2</version>
+    <version>0.6.1</version>
 
     <packaging>pom</packaging>
 
     <name>Flutter SonarQube Plugin</name>
     <description>Enables analysis of Dart and Flutter projects into SonarQube.</description>
-    <url>https://github.com/insideapp-fr/sonar-flutter/tree/master</url>
+    <url>https://github.com/diagngrow/sonar-flutter</url>
 
     <modules>
         <module>sonar-flutter-plugin</module>
@@ -19,8 +19,8 @@
 
     <inceptionYear>2020</inceptionYear>
     <organization>
-        <name>inside|app</name>
-        <url>https://github.com/insideapp-fr</url>
+        <name>Diag n' Grow</name>
+        <url>https://github.com/diagngrow</url>
     </organization>
     <licenses>
         <license>
@@ -31,10 +31,17 @@
     </licenses>
 
     <issueManagement>
-        <url>https://github.com/insideapp-fr/sonar-flutter/issues</url>
+        <url>https://github.com/diagngrow/sonar-flutter/issues</url>
     </issueManagement>
 
     <developers>
+        <developer>
+            <id>geoffreyp</id>
+            <name>Geoffrey Pruvost</name>
+            <url>https://github.com/geoffreyp</url>
+            <organization>Diag n' Grow</organization>
+            <organizationUrl>https://github.com/diagngrow</organizationUrl>
+        </developer>
         <developer>
             <id>zippy1978</id>
             <name>Gilles Grousset</name>
@@ -43,47 +50,48 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@github.com:insideapp-fr/sonar-flutter.git</connection>
-        <developerConnection>scm:git:git@github.com:insideapp-fr/sonar-flutter.git</developerConnection>
-        <url>https://github.com/insideapp-fr/sonar-flutter</url>
+        <connection>scm:git:git@github.com:diagngrow/sonar-flutter.git</connection>
+        <developerConnection>scm:git:git@github.com:diagngrow/sonar-flutter.git</developerConnection>
+        <url>https://github.com/diagngrow/sonar-flutter</url>
       <tag>HEAD</tag>
     </scm>
 
     <properties>
-        <license.owner>inside|app</license.owner>
+        <license.owner>Diag n' Grow</license.owner>
         <license.title>SonarQube Flutter Plugin</license.title>
-        <license.mailto>contact@insideapp.fr</license.mailto>
 
         <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-        <jdk.min.version>1.9</jdk.min.version>
+        <jdk.min.version>17</jdk.min.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <sonar.version>7.9</sonar.version>
-
-        <assertj.version>3.5.2</assertj.version>
+        <sonar.plugin.api.version>14.1.0.5543</sonar.plugin.api.version>
+        <!-- implementation scanner alignee sur la Plugin API 14.1.0.5543 (SonarQube 26.10) -->
+        <sonar.scanner.engine.version>13.15.0.6376</sonar.scanner.engine.version>
+        <slf4j.version>2.0.17</slf4j.version>
         <junit.version>4.13.1</junit.version>
-        <mockito.version>4.4.0</mockito.version>
-        <sslr.version>1.23</sslr.version>
-        <sslr-squid-bridge.version>2.7.1.392</sslr-squid-bridge.version>
-        <ant.version>1.6</ant.version>
-        <assertj.version>3.5.2</assertj.version>
-        <jproc.version>2.2.3</jproc.version>
-        <apache-commons.version>2.12.0</apache-commons.version>
-        <apache-commons-lang3.version>3.12.0</apache-commons-lang3.version>
+        <mockito.version>5.14.2</mockito.version>
+        <assertj.version>3.26.3</assertj.version>
+        <apache-commons.version>2.18.0</apache-commons.version>
+        <jproc.version>2.8.2</jproc.version>
+        <apache-commons-lang3.version>3.18.0</apache-commons-lang3.version>
 
         <sonar.sources>src/main/java,src/main/js</sonar.sources>
         <sonar.exclusions>file:**/src/main/java/**/generated/**/*.java</sonar.exclusions>
-
-        <!-- Max number of rules to process manually when running rule update scripts -->
-        <scripts.max-manual>20</scripts.max-manual>
 
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.sonarsource.sonarqube</groupId>
+            <groupId>org.sonarsource.api.plugin</groupId>
             <artifactId>sonar-plugin-api</artifactId>
-            <version>${sonar.version}</version>
+            <version>${sonar.plugin.api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- SLF4J est fourni par SonarQube / le scanner a l'execution -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -103,65 +111,50 @@
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.buildobjects</groupId>
             <artifactId>jproc</artifactId>
             <version>${jproc.version}</version>
         </dependency>
+        <!-- Annotations javax.annotation (@Nonnull...), utiles a la compilation uniquement -->
         <dependency>
-            <groupId>org.sonarsource.sslr</groupId>
-            <artifactId>sslr-core</artifactId>
-            <version>${sslr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.sonarsource.sslr-squid-bridge</groupId>
-            <artifactId>sslr-squid-bridge</artifactId>
-            <version>${sslr-squid-bridge.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.codehaus.sonar.sslr</groupId>
-                    <artifactId>sslr-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.codehaus.sonar.sslr</groupId>
-                    <artifactId>sslr-xpath</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.codehaus.sonar</groupId>
-                    <artifactId>sonar-plugin-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.picocontainer</groupId>
-                    <artifactId>picocontainer</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>jcl-over-slf4j</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Test dependencies -->
         <dependency>
-            <groupId>org.sonarsource.sonarqube</groupId>
-            <artifactId>sonar-testing-harness</artifactId>
-            <version>${sonar.version}</version>
+            <groupId>org.sonarsource.api.plugin</groupId>
+            <artifactId>sonar-plugin-api-test-fixtures</artifactId>
+            <version>${sonar.plugin.api.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- SensorContextTester, TestInputFileBuilder... -->
+        <dependency>
+            <groupId>org.sonarsource.scanner.engine</groupId>
+            <artifactId>plugin-api-scanner-impl</artifactId>
+            <version>${sonar.scanner.engine.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.sonarsource.scanner.engine</groupId>
+            <artifactId>sensor-test-fixtures</artifactId>
+            <version>${sonar.scanner.engine.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.sonarsource.sslr</groupId>
-            <artifactId>sslr-testing-harness</artifactId>
-            <version>${sslr.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -185,10 +178,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.13.0</version>
                 <configuration>
-                    <source>${jdk.min.version}</source>
-                    <target>${jdk.min.version}</target>
+                    <release>${jdk.min.version}</release>
+                    <!-- les fixtures de test SonarQube 26.x sont compilees en Java 21 -->
+                    <testRelease>21</testRelease>
                     <compilerArgs>
                         <arg>-Xlint</arg>
                     </compilerArgs>
@@ -198,7 +192,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5</version>
+                <version>0.8.12</version>
                 <configuration>
                     <excludes>
                         <exclude>**/generated/**</exclude>
@@ -228,7 +222,8 @@
                 <configuration>
                     <licenseSets>
                         <licenseSet>
-                            <header>com/mycila/maven/plugin/license/templates/LGPL-3.txt</header>
+                            <!-- notice d'origine conservee (LGPL) + Diag n' Grow -->
+                            <header>${maven.multiModuleProjectDirectory}/license-header.txt</header>
                             <includes>
                                 <include>**/*.java</include>
                                 <include>**/*.groovy</include>
@@ -237,36 +232,9 @@
                     </licenseSets>
                     <properties>
                         <owner>${license.owner}</owner>
-                        <email>${license.mailto}</email>
                         <project.name>SonarQube Flutter Plugin</project.name>
                     </properties>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>groovy-maven-plugin</artifactId>
-                <version>2.1.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.codehaus.groovy</groupId>
-                        <artifactId>groovy-all</artifactId>
-                        <version>3.0.22</version>
-                        <type>pom</type>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.ivy</groupId>
-                        <artifactId>ivy</artifactId>
-                        <version>2.5.2</version>
-                    </dependency>
-                </dependencies>
             </plugin>
 
         </plugins>
