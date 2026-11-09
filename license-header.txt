@@ -1,6 +1,6 @@
 SonarQube Flutter Plugin - Enables analysis of Dart and Flutter projects into SonarQube.
 Copyright © 2020 inside|app (contact@insideapp.fr)
-Copyright © 2026 Diagngrow
+Copyright © 2026 Diag n' Grow (contact@diagngrow.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
