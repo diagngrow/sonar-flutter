@@ -1,7 +1,10 @@
 name: CI
 
+# Les branches de PR sont construites par pull_request : push se limite a master
+# pour eviter deux executions identiques a chaque commit.
 on:
   push:
+    branches: [master]
   pull_request:
     branches: [master]
 

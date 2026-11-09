@@ -11,9 +11,12 @@
 
 - Rule generator: rule sets are read with a YAML parser (and fail when empty), and compile
   errors whose diagnostic was removed from the Dart SDK are dropped (5 rules removed, 431 left).
+  Sources are fetched over HTTPS only, duplicate YAML keys and missing diagnostic classes are
+  rejected, and the default profile is checked against mutually exclusive lints (with tests).
 - CI and release workflows: least-privilege token permissions, actions pinned by commit SHA,
-  no Maven cache in the release workflow, CI on pull requests; the snapshot release on `develop`,
-  which reused the release tag, is removed.
+  no Maven cache in the release workflow, CI on pull requests (push builds limited to `master`),
+  release tags restricted to `0.X.Y`; the snapshot release on `develop`, which reused the release
+  tag, is removed.
 - CONTRIBUTING updated (JDK 21, Python rule generator, release process).
 - README rewritten for the Diag n' Grow fork: compatibility table, rules and default profile,
   build instructions, fixed `sonar.dart.analyzer.options.override` example (`false` keeps the

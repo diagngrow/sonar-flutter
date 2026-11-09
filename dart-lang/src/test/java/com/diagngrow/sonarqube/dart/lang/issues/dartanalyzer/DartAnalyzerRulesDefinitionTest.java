@@ -49,12 +49,19 @@ public class DartAnalyzerRulesDefinitionTest {
         RulesDefinition.Context context = new RulesDefinition.Context();
         new DartAnalyzerRulesDefinition().define(context);
 
-        RulesDefinition.Rule rule = context.repository("dartanalyzer").rule("prefer_iterable_wheretype");
-        assertThat(rule).isNotNull();
-        assertThat(rule.deprecatedRuleKeys())
-                .containsExactly(RuleKey.of("dartanalyzer", "prefer_iterable_whereType"));
-        assertThat(DartAnalyzerRulesDefinition.LEGACY_RULE_KEYS.keySet())
-                .allSatisfy(key -> assertThat(context.repository("dartanalyzer").rule(key)).isNotNull());
+        // Valeurs attendues ecrites en dur, independantes de LEGACY_RULE_KEYS.
+        String[][] expected = {
+                {"no_runtimetype_tostring", "no_runtimeType_toString"},
+                {"prefer_for_elements_to_map_fromiterable", "prefer_for_elements_to_map_fromIterable"},
+                {"prefer_iterable_wheretype", "prefer_iterable_whereType"},
+        };
+        for (String[] keys : expected) {
+            RulesDefinition.Rule rule = context.repository("dartanalyzer").rule(keys[0]);
+            assertThat(rule).as(keys[0]).isNotNull();
+            assertThat(rule.deprecatedRuleKeys()).as(keys[0])
+                    .containsExactly(RuleKey.of("dartanalyzer", keys[1]));
+        }
+        assertThat(DartAnalyzerRulesDefinition.LEGACY_RULE_KEYS).hasSize(expected.length);
     }
 
     @Test

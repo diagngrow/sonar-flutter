@@ -63,13 +63,23 @@ When a new Dart SDK is released, regenerate them with:
 $ uv run --no-project --with markdown --with pyyaml python scripts/update_dart_lint_rules.py
 ```
 
-The script prints the added and removed rules. Rule types and severities are computed from the
+The script prints the added and removed rules. It fails when a source has an unexpected format
+(duplicate YAML key, missing diagnostic class, empty rule set) or when the default profile would
+activate two mutually exclusive lints.
+
+The generator tests run with:
+
+```bash
+$ uv run --no-project --with markdown --with pyyaml --with pytest python -m pytest scripts/tests
+```
+
+ Rule types and severities are computed from the
 explicit tables at the top of the script (`BUG_LINTS`, `MAJOR_SMELL_LINTS`, `BUG_WARNINGS`...):
 update these tables to change how a rule is classified, then run the script again.
 
 ## Releasing
 
-A new stable release is published on GitHub on every new `0.*` tag, by the `release.yml`
+A new stable release is published on GitHub on every new `0.X.Y` tag (for example `0.6.1`), by the `release.yml`
 GitHub Actions workflow. The workflow sets the project version from the tag.
 
 The steps to issue a new stable release are:

@@ -25,7 +25,8 @@ Regles de generation :
     plus EXTRA_ACTIVE_LINTS.
 
 analysis_options.yaml active toutes les regles stables ou experimentales
-(le profil SonarQube filtre ensuite) ; les regles depreciees et les codes de
+(le profil SonarQube filtre ensuite), y compris des paires incompatibles : le
+script echoue si le profil par defaut active les deux regles d'une paire ; les regles depreciees et les codes de
 diagnostic n'y figurent pas (ce ne sont pas des lints).
 
 Usage : python3 scripts/update_dart_lint_rules.py   (necessite `markdown` et `pyyaml`)
@@ -35,6 +36,7 @@ import json
 import pathlib
 import re
 import sys
+import urllib.parse
 import urllib.request
 
 import markdown
@@ -191,13 +193,38 @@ CAMEL_CASE_LINTS = {name.lower(): name for name in (
 
 
 def fetch(url: str) -> str:
-    with urllib.request.urlopen(url, timeout=60) as resp:
+    # urlopen accepte aussi file: et d'autres schemas : seules les sources HTTPS sont lues.
+    if urllib.parse.urlparse(url).scheme != "https":
+        raise SystemExit(f"URL refusee (HTTPS uniquement) : {url}")
+    with urllib.request.urlopen(url, timeout=60) as resp:  # noqa: S310 (schema verifie ci-dessus)
         return resp.read().decode("utf-8")
+
+
+class UniqueKeyLoader(yaml.SafeLoader):
+    """SafeLoader qui refuse les cles dupliquees (safe_load garde la derniere sans rien dire)."""
+
+
+def _mapping_without_duplicates(loader, node, deep=False):
+    keys = set()
+    for key_node, _ in node.value:
+        key = loader.construct_object(key_node, deep=deep)
+        if key in keys:
+            raise yaml.constructor.ConstructorError(
+                None, None, f"cle dupliquee : {key!r}", key_node.start_mark)
+        keys.add(key)
+    return loader.construct_mapping(node, deep=deep)
+
+
+UniqueKeyLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _mapping_without_duplicates)
+
+
+def load_yaml(text: str):
+    return yaml.load(text, Loader=UniqueKeyLoader)  # noqa: S506 (SafeLoader)
 
 
 def rule_set(url: str) -> set:
     # Noms en minuscules : les jeux gardent le camelCase historique, pas le catalogue.
-    data = yaml.safe_load(fetch(url)) or {}
+    data = load_yaml(fetch(url)) or {}
     rules = (data.get("linter") or {}).get("rules") or []
     if isinstance(rules, dict):
         rules = [name for name, enabled in rules.items() if enabled]
@@ -238,6 +265,10 @@ def warning_type_and_severity(code: str) -> tuple:
 def warnings_by_code(messages: dict) -> dict:
     """Avertissements regroupes par code de rapport (sharedName ou nom)."""
     by_code = {}
+    missing = [cls for cls in WARNING_CLASSES if not isinstance(messages.get(cls), dict)]
+    if missing:
+        raise SystemExit(f"Classes absentes de messages.yaml : {', '.join(missing)}. "
+                         "Mettre a jour WARNING_CLASSES.")
     for cls in WARNING_CLASSES:
         for name, entry in messages[cls].items():
             if entry.get("removedIn"):
@@ -283,9 +314,26 @@ def describe(rule: dict) -> str:
     return body + "\n" + "\n".join(notes)
 
 
+def check_no_incompatible_active(lints: list, rules: list) -> None:
+    """Le profil par defaut ne doit pas activer deux lints qui s'excluent.
+
+    analysis_options.yaml active tous les lints, y compris des paires
+    incompatibles : c'est le profil SonarQube qui choisit lesquels sont
+    signales. Si les deux regles d'une paire y etaient actives, certaines
+    declarations ne pourraient satisfaire l'une sans enfreindre l'autre.
+    """
+    active = {r["key"] for r in rules if r["active"]}
+    conflicts = sorted({tuple(sorted((rule["name"].lower(), other.lower())))
+                        for rule in lints if rule["name"].lower() in active
+                        for other in rule.get("incompatible") or [] if other.lower() in active})
+    if conflicts:
+        raise SystemExit("Lints incompatibles actifs dans le profil par defaut : "
+                         + ", ".join(f"{a}/{b}" for a, b in conflicts))
+
+
 def main() -> int:
     lints = json.loads(fetch(LINTER_RULES_URL))
-    messages = yaml.safe_load(fetch(MESSAGES_URL))
+    messages = load_yaml(fetch(MESSAGES_URL))
     recommended = set().union(*(rule_set(u) for u in SET_URLS))
 
     old = json.loads(RULES_FILE.read_text(encoding="utf-8"))
@@ -337,6 +385,7 @@ def main() -> int:
                    for k, r in sorted(old_by_key.items()) if k not in known and k in sdk_codes]
 
     out = lint_rules + warning_rules + error_rules
+    check_no_incompatible_active(lints, out)
     RULES_FILE.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     enabled = [CAMEL_CASE_LINTS.get(r["name"].lower(), r["name"]) for r in sorted(lints, key=lambda r: r["name"])

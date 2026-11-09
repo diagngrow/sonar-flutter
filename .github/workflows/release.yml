@@ -3,15 +3,18 @@ name: Release
 on:
   push:
     tags:
-      - 0.*
+      - '0.[0-9]+.[0-9]+'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    # Ecriture necessaire uniquement pour creer la release et y deposer le JAR.
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -28,7 +31,12 @@ jobs:
           check-latest: true
 
       - name: Set version
-        run: mvn -B versions:set -DnewVersion="$GITHUB_REF_NAME"
+        run: |
+          if ! [[ "$GITHUB_REF_NAME" =~ ^0\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Tag invalide : $GITHUB_REF_NAME (attendu : 0.X.Y)" >&2
+            exit 1
+          fi
+          mvn -B versions:set -DnewVersion="$GITHUB_REF_NAME"
 
       - name: Build
         run: mvn -B package --file pom.xml
